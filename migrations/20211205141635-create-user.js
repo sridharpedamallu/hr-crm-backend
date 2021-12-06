@@ -41,9 +41,6 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      otp: {
-        type: Sequelize.STRING,
-      },
       emailConfirmed: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,

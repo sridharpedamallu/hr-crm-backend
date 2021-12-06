@@ -5,12 +5,13 @@ const LogInSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  otp: {
+  userUuid: {
     type: String,
     required: true,
   },
-  expire: {
-    type: Date,
+  accessToken: {
+    type: String,
+    required: true,
   },
 });
 

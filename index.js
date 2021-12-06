@@ -36,8 +36,8 @@ app.get("/", function (req, res) {
   return res.send(`HR CRM`);
 });
 
-app.use("/auth", require("./routes/auth"));
-app.use("/user", require("./routes/user"));
+app.use("/auth", require("./routes/AuthRouter"));
+app.use("/user", require("./routes/UserRouter"));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

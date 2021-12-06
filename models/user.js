@@ -21,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       phone: DataTypes.STRING,
       userType: DataTypes.ENUM(["user", "admin", "superuser"]),
       isActive: DataTypes.BOOLEAN,
-      otp: DataTypes.STRING,
       emailConfirmed: DataTypes.BOOLEAN,
     },
     {

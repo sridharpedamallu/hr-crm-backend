@@ -1,10 +1,14 @@
 const db = require("../models");
 const { User } = db;
 const Op = db.Sequelize.Op;
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
 
-const Login = require("../models/login");
+const OTP = require("../models/otp");
+const Logins = require("../models/login");
 
-const email = require("../middleware/email");
+const emailApi = require("../middleware/email");
 
 exports.generateOtp = async (req, res) => {
   const { loginName } = { ...req.body };
@@ -35,29 +39,73 @@ exports.generateOtp = async (req, res) => {
   const d = new Date();
   d.setMinutes(d.getMinutes() + otpExpiryMinutes);
 
-  const loginEntry = new Login({
+  const otpEntry = new OTP({
     userId: user.uuid,
     otp,
     expire: d,
   });
 
-  await loginEntry.save();
+  await otpEntry.save();
 
-  email.sendEmail({ to: user.email, body: otp, template: "LoginOtpTemplate" });
+  emailApi.sendEmail({
+    to: user.email,
+    body: otp,
+    template: "LoginOtpTemplate",
+  });
 
   return res.json({ otpExpiryMinutes, user: user.uuid });
 };
+
 exports.login = async (req, res) => {
   const { user, otp } = { ...req.body };
   if (!user || !otp) {
     return res.sendStatus(400);
   }
 
-  const loginData = await Login.findOne({ userId: user, otp });
+  const loginData = await OTP.findOne({ userId: user, otp });
 
   if (!loginData || loginData.expire < new Date()) {
     return res.status(400).send("Invalid OTP or Invalid request");
   }
 
-  return res.send(loginData);
+  const userData = await User.findOne({ where: { uuid: user } });
+
+  let payload = {
+    id: userData.uuid,
+    email: userData.email,
+    phone: userData.phone,
+  };
+  let accessToken = jwt.sign(
+    {
+      data: payload,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  await Logins.deleteMany({
+    where: {
+      userId: userData.id,
+    },
+  });
+  const loginDetails = new Logins({
+    userId: userData.id,
+    userUuid: userData.uuid,
+    accessToken,
+  });
+  await loginDetails.save();
+
+  return res.send({
+    message: "success",
+    user: {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+    },
+    accessToken,
+  });
+};
+
+exports.logout = async (req, res) => {
+  await Logins.deleteMany({ userId: req.user.id });
+  return res.send("logged out");
 };

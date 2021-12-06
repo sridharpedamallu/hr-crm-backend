@@ -1,6 +1,11 @@
 const express = require("express");
-const { register } = require("../controllers/usercontroller");
+const {
+  register,
+  confirmEmail,
+  editProfile,
+} = require("../controllers/UserController");
 const router = express.Router();
+const authGuard = require("../middleware/AuthGuard");
 
 // router.use(function timeLog(req, res, next) {
 //   console.log("Time: ", Date.now());
@@ -12,5 +17,7 @@ router.get("/", function (req, res) {
 });
 
 router.post("/register", register);
+router.post("/confirm-email", confirmEmail);
+router.post("/edit-profile", authGuard.verify, editProfile);
 
 module.exports = router;
