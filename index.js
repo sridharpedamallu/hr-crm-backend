@@ -38,6 +38,7 @@ app.get("/", function (req, res) {
 
 app.use("/auth", require("./routes/AuthRouter"));
 app.use("/user", require("./routes/UserRouter"));
+app.use("/employee", require("./routes/EmployeeRouter"));
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

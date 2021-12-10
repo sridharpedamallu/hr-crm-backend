@@ -13,6 +13,11 @@ const LogInSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  loginDateTime: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
 });
 
 const LogIn = mongoose.model("LogIn", LogInSchema);

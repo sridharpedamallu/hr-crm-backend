@@ -9,6 +9,11 @@ const OtpSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  dateTime: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
   expire: {
     type: Date,
   },
